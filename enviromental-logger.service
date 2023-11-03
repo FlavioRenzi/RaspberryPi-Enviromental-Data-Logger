@@ -1,0 +1,13 @@
+[Unit]
+Description=enviromental-logger
+After=network.target
+StartLimitIntervalSec=0
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=siemens
+ExecStart=/home/siemens/RaspberryPi-Enviromental-Data-Logger/runner.sh
+
+[Install]
+WantedBy=multi-user.target
