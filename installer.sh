@@ -14,7 +14,8 @@ source logger_env/bin/activate
 pip install -r requirements.txt
 
 # Install systemd service
-sudo cp enviromental_logger.service /etc/systemd/system/logger.service
+sudo chmod +x runner.sh
+sudo cp enviromental-logger.service /etc/systemd/system/enviromental_logger.service
 sudo systemctl daemon-reload
 sudo systemctl enable enviromental_logger.service
 sudo reboot
