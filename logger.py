@@ -115,7 +115,7 @@ def run_pir(interval=0.5, window=30):
 
 
 def run_logger(interval):
-    filename = '/home/siemens/logger/data.csv'
+    filename = '/home/siemens/RaspberryPi-Enviromental-Data-Logger/data.csv'
     if not os.path.exists(filename):
         with open(filename, 'w') as f:
             f.write('timestamp,co2,temperature,humidity,presence,pir_average,scd41_status,pir_status,restarted\n')
