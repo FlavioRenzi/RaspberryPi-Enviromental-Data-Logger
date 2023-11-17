@@ -117,7 +117,7 @@ def run_pir(interval=0.5, window=30, presence_field='presence',avg_field='pir_av
         raise e
 
 
-def run_logger(interval, filename='/home/siemens/logger/data.csv'):
+def run_logger(interval, filename='/home/siemens/RaspberryPi-Enviromental-Data-Logger/data.csv'):
     try:
         pixels.write_one(0, [0, 0, 0])
         if not os.path.exists(filename):
