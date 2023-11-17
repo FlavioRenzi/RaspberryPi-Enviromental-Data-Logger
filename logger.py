@@ -110,6 +110,7 @@ def run_pir(interval=0.5, window=30, presence_field='presence',avg_field='pir_av
                 if led != -1 : pixels.write_one(led, [0, 0, 15])
             else:
                 last_sample[presence_field] = 0
+                pixels.write_one(led, [0, 0, 0])
             time.sleep(interval)
     except Exception as e:
         last_sample['pir_status'] = 'ERROR'
