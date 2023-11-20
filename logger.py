@@ -8,6 +8,7 @@ import RPi.GPIO as GPIO
 import threading
 from sensirion_i2c_scd import Scd4xI2cDevice
 from sensirion_i2c_driver import LinuxI2cTransceiver, I2cConnection
+import csv
 
 class Pixels:
     PIXELS_N = 3
@@ -46,11 +47,11 @@ last_sample = {
     'presence10': 0,
     'presence30': 0,
     'presence60': 0,
-    'scd41_status': 'OK',
-    'pir_status': 'OK',
     'pir_average10': 0,
     'pir_average30': 0,
     'pir_average60': 0,
+    'scd41_status': 'OK',
+    'pir_status': 'OK',
     'restarted': 'restart'
 }
 
@@ -123,26 +124,13 @@ def run_logger(interval, filename='/home/siemens/RaspberryPi-Enviromental-Data-L
         pixels.write_one(0, [0, 0, 0])
         if not os.path.exists(filename):
             with open(filename, 'w') as f:
-                f.write('timestamp,co2,temperature,humidity,presence10,presence30,presence60,pir_average,scd41_status,pir_status,restarted\n')
+                writer = csv.DictWriter(f, fieldnames=last_sample.keys())
+                writer.writeheader()
         time.sleep(6)
         with open(filename, 'a') as f:
             while True:
-                new_row = '{},{},{},{},{},{},{},{},{},{},{}\n'.format(
-                    time.time(),
-                    last_sample['co2'],
-                    last_sample['temperature'],
-                    last_sample['humidity'],
-                    last_sample['presence10'],
-                    last_sample['presence30'],
-                    last_sample['presence60'],
-                    last_sample['pir_average10'],
-                    last_sample['pir_average30'],
-                    last_sample['pir_average60'],
-                    last_sample['scd41_status'],
-                    last_sample['pir_status'],
-                    last_sample['restarted']
-                )
-                f.write(new_row)
+                writer = csv.DictWriter(f, fieldnames=last_sample.keys())
+                writer.writerow(last_sample)
                 #print('10sec: ',last_sample['presence10'], '30sec: ',last_sample['presence30'], '60sec: ',last_sample['presence60'])
                 f.flush()
                 last_sample['restarted'] = 'continue'
@@ -169,9 +157,9 @@ if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
     t1 = threading.Thread(target=lambda: threadwrap(lambda: run_scd41()), daemon=True)
-    t2 = threading.Thread(target=lambda: threadwrap(lambda: run_pir(interval=0.2, window=10, presence_field='presence10', avg_field='pir_average10', led=0)), daemon=True)
-    t5 = threading.Thread(target=lambda: threadwrap(lambda: run_pir(interval=0.2, window=30, presence_field='presence30', avg_field='pir_average30', led=1)), daemon=True)
-    t6 = threading.Thread(target=lambda: threadwrap(lambda: run_pir(interval=0.2, window=60, presence_field='presence60', avg_field='pir_average60', led=2)), daemon=True)
+    t2 = threading.Thread(target=lambda: threadwrap(lambda: run_pir(interval=0.2, window=10, presence_field='presence10', avg_field='pir_average10', led=-1)), daemon=True)
+    t5 = threading.Thread(target=lambda: threadwrap(lambda: run_pir(interval=0.2, window=30, presence_field='presence30', avg_field='pir_average30', led=-1)), daemon=True)
+    t6 = threading.Thread(target=lambda: threadwrap(lambda: run_pir(interval=0.2, window=60, presence_field='presence60', avg_field='pir_average60', led=-1)), daemon=True)
     t3 = threading.Thread(target=lambda: threadwrap(lambda: run_logger(interval=10)), daemon=True)
     t4 = threading.Thread(target=lambda: threadwrap(lambda: time_checker()), daemon=True)
     t1.start()
