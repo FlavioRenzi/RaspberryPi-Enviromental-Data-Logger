@@ -124,13 +124,14 @@ def run_logger(interval, filename='/home/siemens/RaspberryPi-Enviromental-Data-L
         pixels.write_one(0, [0, 0, 0])
         if not os.path.exists(filename):
             with open(filename, 'w') as f:
-                writer = csv.DictWriter(f, fieldnames=last_sample.keys())
+                writer = csv.DictWriter(f, fieldnames=dict({'timestamp': '0'}, **last_sample).keys())
                 writer.writeheader()
         time.sleep(6)
         with open(filename, 'a') as f:
             while True:
-                writer = csv.DictWriter(f, fieldnames=last_sample.keys())
-                writer.writerow(last_sample)
+                newRow = dict({'timestamp': time.time()}, **last_sample)
+                writer = csv.DictWriter(f, fieldnames=newRow.keys())
+                writer.writerow(newRow)
                 #print('10sec: ',last_sample['presence10'], '30sec: ',last_sample['presence30'], '60sec: ',last_sample['presence60'])
                 f.flush()
                 last_sample['restarted'] = 'continue'
